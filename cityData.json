@@ -1,0 +1,20 @@
+{
+  "cityName": "arkadelphia",
+  "costIndex": "79.8",
+  "houseHoldMedianIncome": "35,154",
+  "population": "10,258",
+  "malePopulation": "4,923",
+  "femalePopulation": "5,335",
+  "medianHouseValue": "141,170",
+  "medianAge": "24.6",
+  "races": [
+    { "numOfRace": "5,841", "percentOf": "56.2", "ethnicity": "White alone" },
+    { "numOfRace": "3,261", "percentOf": "31.4", "ethnicity": "Black alone" },
+    { "numOfRace": "601", "percentOf": "5.8", "ethnicity": "Hispanic" },
+    { "numOfRace": "440", "percentOf": "4.2", "ethnicity": "Two or more races" },
+    { "numOfRace": "108", "percentOf": "1.0", "ethnicity": "Asian alone" },
+    { "numOfRace": "16", "percentOf": "0.2", "ethnicity": "Native Hawaiian and Other<br>Pacific Islander alone" },
+    { "numOfRace": "12", "percentOf": "0.1", "ethnicity": "American Indian alone" },
+    { "numOfRace": "11", "percentOf": "0.1", "ethnicity": "Other race alone" }
+  ]
+}
