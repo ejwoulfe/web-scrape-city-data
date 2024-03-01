@@ -1,7 +1,7 @@
 import puppeteer from 'puppeteer';
 import { createRequire } from 'node:module';
 const require = createRequire(import.meta.url);
-const stateData = require('../states.json');
+const statesArr = require('../states.json');
 import fs from 'fs';
 
 
@@ -14,12 +14,12 @@ import fs from 'fs';
     const browser = await puppeteer.launch({ headless: false, defaultViewport: null });
     const page = await browser.newPage();
 
-    const citiesData = {};
+    const stateCitiesData = {};
 
-    for (let states in stateData) {
-        let citiesLinksArray = stateData[states];
+    for (let state in statesArr) {
+        let citiesData = {};
+        let citiesLinksArray = statesArr[state];
         for (let i = 0; i < citiesLinksArray.length; i++) {
-
 
 
             // // Navigate the page to a URL
@@ -58,7 +58,8 @@ import fs from 'fs';
                     unemployment: '#unemployment > div > table > tbody > tr:nth-child(1) > td:nth-child(2)',
                     maritalStatus: '#marital-info > ul',
                     education: '#education-info > ul',
-                    commuteTime: '#education-info > ul > li:nth-child(5)'
+                    commuteTime: '#education-info > ul > li',
+                    crime: '#crime'
                 }
 
                 // City Name
@@ -171,18 +172,33 @@ import fs from 'fs';
                 data.education = education;
 
                 // Commute Time
-                let commuteTimeStr = clearBTags(document.querySelector(dataSelectors.commuteTime).innerHTML.trim());
-                data.commuteTime = commuteTimeStr.substring(commuteTimeStr.indexOf(':') + 1, commuteTimeStr.lastIndexOf('m')).trim();
+                let listNodesArr = document.querySelectorAll(dataSelectors.commuteTime);
+                let listArr = [...listNodesArr];
+                let commuteListElement = clearBTags(listArr.filter((ele) => ele.innerHTML.includes("commute"))[0].innerHTML);
+                data.commuteTime = commuteListElement.substring(commuteListElement.indexOf(':') + 1, commuteListElement.lastIndexOf('m')).trim();
+
+                // Crime
+                let crimeElement = document.querySelector('#crime');
+                if (crimeElement !== null) {
+                    let crimeData = {};
+                    let tableHead = '#crimeTab > thead';
+                    let tableFoot = '#crimeTab > tfoot';
+                    let numOfRows = document.querySelectorAll(tableHead + ' > tr > th').length;
+                    for (let i = 1; i <= numOfRows; i++) {
+                        if (i !== 1) {
+                            let date = document.querySelector(tableHead + ` > tr > th:nth-child(${i}) > h4`).innerHTML.trim();
+                            let crimeIndex = document.querySelector(tableFoot + ` > tr > td:nth-child(${i})`).innerHTML.trim();
+                            crimeData[date] = crimeIndex;
 
 
+                        }
 
+                    }
+                    data.crime = crimeData;
 
-
-
-
-
-
-
+                } else {
+                    data.crime = null;
+                }
 
                 // delay to avoid sending requests too fast.
                 await delay(20000);
@@ -191,9 +207,14 @@ import fs from 'fs';
             })
 
             citiesData[cityData.cityName] = cityData;
-            console.log(citiesData)
 
         }
+        stateCitiesData[state] = citiesData;
+        fs.writeFileSync('cityData.json', JSON.stringify(stateCitiesData));
+
+
+
     }
+
     await browser.close();
 })();
